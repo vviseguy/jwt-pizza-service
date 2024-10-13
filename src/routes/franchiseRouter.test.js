@@ -3,26 +3,8 @@ const app = require("../service");
 
 const h = require("../testHelpers.test.js");
 
-storeMatch = expect.objectContaining({
-  id: expect.any(Number),
-  name: expect.any(String),
-});
-franchiseMatch = expect.objectContaining({
-  id: expect.any(Number),
-  name: expect.any(String),
-  stores: expect.arrayContaining([storeMatch]),
-});
-adminMatch = expect.objectContaining({
-  name: expect.any(String),
-  email: expect.any(String),
-});
-franchiseRawMatch = expect.objectContaining({
-  id: expect.any(Number),
-  name: expect.any(String),
-  admins: expect.arrayContaining([adminMatch]),
-});
 
-let adminUser, testUser, adminUserAuthToken,testUserAuthToken;
+let admin, adminUserAuthToken;
 describe("Franchise endpoint tests", () => {
   beforeAll(async () => {
     admin = await h.createAdminUser();
@@ -36,7 +18,7 @@ describe("Franchise endpoint tests", () => {
     expect(franchiseRes.status).toBe(200);
     expect(franchiseRes.body).toEqual(expect.any(Array));
 
-    items = [
+    let items = [
       expect.objectContaining({ id: (await h.createFranchise(admin)).id }),
       expect.objectContaining({ id: (await h.createFranchise(admin)).id }),
       expect.objectContaining({ id: (await h.createFranchise(admin)).id }),
@@ -53,7 +35,7 @@ describe("Franchise endpoint tests", () => {
     expect(franchiseRes.status).toBe(200);
     expect(franchiseRes.body).toEqual(expect.any(Array));
 
-    items = [
+    let items = [
       expect.objectContaining({ id: (await h.createFranchise(admin)).id }),
       expect.objectContaining({ id: (await h.createFranchise(admin)).id }),
       expect.objectContaining({ id: (await h.createFranchise(admin)).id }),
@@ -111,7 +93,7 @@ describe("Franchise endpoint tests", () => {
     const franchise = await h.createFranchise( {email, name, id})
 
     // get by user
-    getRes = await request(app).get(`/api/franchise/${admin.id}`)
+    const getRes = await request(app).get(`/api/franchise/${admin.id}`)
       .set("Authorization", `Bearer ${adminUserAuthToken}`);
     
     expect(getRes.status).toBe(200);
@@ -133,18 +115,18 @@ describe("Franchise endpoint tests", () => {
   });
   test("Delete Store without franchise and no admin", async () => {
     
-    testUser = h.generateRandomUser()    
+    let testUser = h.generateRandomUser()    
     const registerRes = await request(app).post('/api/auth').send(testUser);
-    testUserAuthToken = registerRes.body.token;   
+    let testUserAuthToken = registerRes.body.token;   
 
     let deleteStoreRes = await request(app).delete(`/api/franchise/${h.randomId()}/store/${h.randomId()}`)
       .set("Authorization", `Bearer ${testUserAuthToken}`);
     expect(deleteStoreRes.status).toBe(403);
   })
   test("Create Store without franchise and no admin", async () => {    
-    testUser = h.generateRandomUser()    
+    let testUser = h.generateRandomUser()    
     const registerRes = await request(app).post('/api/auth').send(testUser);
-    testUserAuthToken = registerRes.body.token;   
+    let testUserAuthToken = registerRes.body.token;   
 
     let {email, name, id} = admin
     const franchise = await h.createFranchise( {email, name, id})
@@ -155,10 +137,10 @@ describe("Franchise endpoint tests", () => {
     expect(addStoreRes.status).toBe(403);
   })
   test("Add/delete store to franchise non admin", async () => {
-    testUser = await h.createUser()  
+    let testUser = await h.createUser()  
     const loginRes = await request(app).put('/api/auth').send(testUser);
     expect(loginRes.status).toBe(200);
-    testUserAuthToken = loginRes.body.token
+    let testUserAuthToken = loginRes.body.token
     h.expectValidJwt(loginRes.body.token)   
     
     
@@ -203,7 +185,7 @@ describe("Franchise endpoint tests", () => {
     expect(deleteStoreRes.status).toBe(200);
 
     // Check that store was removed
-    getRes = await request(app).get(`/api/franchise/${admin.id}`)
+    let getRes = await request(app).get(`/api/franchise/${admin.id}`)
       .set("Authorization", `Bearer ${adminUserAuthToken}`);
     expect(getRes.status).toBe(200);
 
@@ -218,9 +200,9 @@ describe("Franchise endpoint tests", () => {
 
   // });
   test("Remove existant franchise not as admin", async () => {
-    user = await h.createUser();
+    let user = await h.createUser();
     const loginRes = await request(app).put('/api/auth').send(user);
-    userAuthToken = loginRes.body.token;
+    let userAuthToken = loginRes.body.token;
     h.expectValidJwt(userAuthToken);
 
     let {email, name, id} = admin

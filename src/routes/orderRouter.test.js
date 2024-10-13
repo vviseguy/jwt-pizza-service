@@ -3,12 +3,6 @@ const app = require("../service");
 
 const h = require("../testHelpers.test.js");
 
-menuItem = expect.objectContaining({
-  title: expect.any(String),
-  description: expect.any(String),
-  image: expect.any(String),
-  price: expect.any(Number),
-});
 
 let admin, adminAuthToken;
 describe("Endpoint Tests", () => {
@@ -24,7 +18,7 @@ describe("Endpoint Tests", () => {
     expect(menuRes.status).toBe(200);
     expect(menuRes.body).toEqual(expect.any(Array));
 
-    items = [
+    let items = [
       await h.createMenuItem(),
       await h.createMenuItem(),
       await h.createMenuItem(),
@@ -42,14 +36,14 @@ describe("Endpoint Tests", () => {
     expect(addMenuRes.status).toBe(200);
 
     menuItem.id = expect.any(Number)
-    menuRes = await request(app).get("/api/order/menu");
+    let menuRes = await request(app).get("/api/order/menu");
     expect(menuRes.status).toBe(200);
     expect(menuRes.body).toEqual(expect.arrayContaining([menuItem]));
   });
   test("Add menu item unauthorized", async () => {
     const regUser = await h.createUser();
     const loginRes = await request(app).put('/api/auth').send(regUser);
-    regUserAuthToken = loginRes.body.token;
+    let regUserAuthToken = loginRes.body.token;
     
     const menuItem = h.generateMenuItem()
     let addMenuRes = await request(app).put("/api/order/menu")
@@ -58,7 +52,7 @@ describe("Endpoint Tests", () => {
     expect(addMenuRes.status).toBe(403);
 
     menuItem.id = expect.any(Number)
-    menuRes = await request(app).get("/api/order/menu");
+    let menuRes = await request(app).get("/api/order/menu");
     expect(menuRes.status).toBe(200);
     expect(menuRes.body).not.toEqual(expect.arrayContaining([menuItem]));
   });
@@ -68,7 +62,7 @@ describe("Endpoint Tests", () => {
     expect(menuRes.status).toBe(200);
     expect(menuRes.body).toEqual(expect.any(Array));
 
-    items = [
+    let items = [
       await h.createMenuItem(),
       await h.createMenuItem(),
       await h.createMenuItem(),
@@ -84,7 +78,7 @@ describe("Endpoint Tests", () => {
       .set("Authorization", `Bearer ${adminAuthToken}`);
     expect(menuRes.status).toBe(200);
 
-    expectObj = {
+    let expectObj = {
       dinerId: expect.any(Number),
       orders: expect.any(Array),
       page: expect.any(Number),
@@ -108,7 +102,7 @@ describe("Endpoint Tests", () => {
     expect(createOrderRes.status).toBe(200);
 
     order.id = expect.any(Number)
-    expectObj = {
+    let expectObj = {
       order: order,
       jwt: expect.any(String),
     };
@@ -158,7 +152,7 @@ describe("Endpoint Tests", () => {
     expect(menuRes.status).toBe(200);
     expect(menuRes.body).toEqual(expect.any(Array));
 
-    items = [
+    let items = [
       await h.createMenuItem(),
       await h.createMenuItem(),
       await h.createMenuItem(),

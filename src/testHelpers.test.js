@@ -88,18 +88,18 @@ function getRandomItems(arr, n) {
 }
 function generateExpectsObjShadow(obj) {
   // if (obj == null || obj == undefined) return obj;
-
+  let rtrn;
   switch (typeof obj) {
     case "array":
-      let arr = obj.map((item) => generateExpectsObjShadow(item));
-      return expect.arrayContaining(arr);
+      rtrn = obj.map((item) => generateExpectsObjShadow(item));
+      return expect.arrayContaining(rtrn);
     case "object":
       // Map object to new object
-      const newObj = Object.entries(obj).reduce((acc, [key, value]) => {
+      rtrn = Object.entries(obj).reduce((acc, [key, value]) => {
         acc[key] = generateExpectsObjShadow(value);
         return acc;
       }, {});
-      return expect.objectContaining(newObj);
+      return expect.objectContaining(rtrn);
     case "date":
     case "string":
     case "number":
