@@ -209,10 +209,10 @@ metrics.initializeMetric("pizza-bought", "gauge", "1");
 metrics.initializeMetric("revenue", "gauge", "1");
 metrics.initializeMetric("pizza-creation", "summary", "1");
 const trackOrder = (req, res, next) => {
-  // console.log("orderItems",res.status, res.statusCode)
+  console.log("orderItems",res.status, res.statusCode)
   res.on("finish", function () {
     
-    // console.log("orderItemsadfasdfa",res.statusCode)
+    console.log("orderItemsadfasdfa",res.statusCode)
     if (res.statusCode == 200){
       // console.log(req.body)
       const orderItems = req.body.items
@@ -223,7 +223,7 @@ const trackOrder = (req, res, next) => {
         metrics.log("revenue", orderItem.price);
 
       });
-    } else if (res.statusCode >= 500) {
+    } else if (res.statusCode >= 400) {
       metrics.log("pizza-creation",1,{status:"failure"});
     }
   })
