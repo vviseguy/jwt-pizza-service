@@ -4,4 +4,3 @@ config.js
 coverage
 dist
 src/start_mysql.sh
-package-lock.json
