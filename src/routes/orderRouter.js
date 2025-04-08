@@ -3,6 +3,7 @@ const config = require('../config.js');
 const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
+const {track, trackOrder} = require('../metrics.js')
 
 const orderRouter = express.Router();
 
@@ -75,6 +76,8 @@ orderRouter.get(
 // createOrder
 orderRouter.post(
   '/',
+  trackOrder,
+  track("pizzaCreation"),
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
     const orderReq = req.body;
