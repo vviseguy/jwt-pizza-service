@@ -214,7 +214,7 @@ const trackOrder = (req, res, next) => {
     
     // console.log("orderItemsadfasdfa",res.statusCode)
     if (res.statusCode == 200){
-      console.log(req.body)
+      // console.log(req.body)
       const orderItems = req.body.items
       // console.log("orderItems",orderItems.length)
       metrics.log("pizza-bought", orderItems.length);
@@ -279,9 +279,9 @@ function sendMetricsToGrafana() {
     },
   })
     .then((response) => {
-      // if (!response.ok)
-      //   console.error("Failed to push metrics data to Grafana", response);
-      // else console.log("Pushed all metrics");
+      if (!response.ok)
+        console.error("Failed to push metrics data to Grafana", response);
+      else console.log("Pushed all metrics");
     })
     .catch((error) => console.error("Error pushing metrics:", error));
 }
