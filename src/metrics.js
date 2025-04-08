@@ -145,12 +145,12 @@ metrics.initializeMetric("auth-attempt", "summary", "1");
 // functionality to log metrics
 function addAuthAttempt(user) {
   // log the expiration of the users tokens
-  console.log(user)
+  // console.log(user)
   
   if (user) {
     metrics.log("auth-attempt",1,{result:"success"});
     activeUsers[user.id] = user.iat;
-    console.log(activeUsers)
+    // console.log(activeUsers)
   }
   else metrics.log("auth-attempt",1,{result:"failure"});
 }
@@ -198,7 +198,7 @@ function track(endpoint) {
 const trackLogout = (req, res, next) => {
   // track active users
   const user = req.user;
-  console.log(activeUsers)
+  // console.log(activeUsers)
   if (user) delete activeUsers[user.id];
 
   next();
@@ -209,13 +209,14 @@ metrics.initializeMetric("pizza-bought", "gauge", "1");
 metrics.initializeMetric("revenue", "gauge", "1");
 metrics.initializeMetric("pizza-creation", "summary", "1");
 const trackOrder = (req, res, next) => {
-  console.log("orderItems",res.status, res.statusCode)
+  // console.log("orderItems",res.status, res.statusCode)
   res.on("finish", function () {
     
-    console.log("orderItemsadfasdfa",res.statusCode)
+    // console.log("orderItemsadfasdfa",res.statusCode)
     if (res.statusCode == 200){
-      const orderItems = res.body.orders
-      console.log("orderItems",orderItems.length)
+      console.log(req.body)
+      const orderItems = req.body.items
+      // console.log("orderItems",orderItems.length)
       metrics.log("pizza-bought", orderItems.length);
       metrics.log("pizza-creation",1,{status:"success"});
       orderItems.forEach((orderItem) => {
@@ -278,9 +279,9 @@ function sendMetricsToGrafana() {
     },
   })
     .then((response) => {
-      if (!response.ok)
-        console.error("Failed to push metrics data to Grafana", response);
-      else console.log("Pushed all metrics");
+      // if (!response.ok)
+      //   console.error("Failed to push metrics data to Grafana", response);
+      // else console.log("Pushed all metrics");
     })
     .catch((error) => console.error("Error pushing metrics:", error));
 }
@@ -288,5 +289,5 @@ function sendMetricsToGrafana() {
 setInterval(recordGaugeMetrics, 1000);
 setInterval(sendMetricsToGrafana, 10000);
 
-module.exports = { requestTracker, addAuthAttempt, track, trackLogout, trackOrder };
+module.exports = { requestTracker, addAuthAttempt, track, trackLogout, trackOrder, metrics };
 

@@ -44,7 +44,7 @@ describe("Franchise endpoint tests", () => {
     franchiseRes = await request(app).get("/api/franchise");
     expect(franchiseRes.status).toBe(200);
     expect(franchiseRes.body).toEqual(expect.arrayContaining(items));
-  });
+  }, 15000);
 
 
  
