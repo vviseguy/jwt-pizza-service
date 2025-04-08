@@ -10,7 +10,10 @@
       }
     },
     "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "coveragePathIgnorePatterns":[
       "/node_modules/",
-      "/src/metrics.js"
+      "/src/metrics"
     ]
   }
