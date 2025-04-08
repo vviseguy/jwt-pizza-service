@@ -147,7 +147,7 @@ function addAuthAttempt(user) {
   // log the expiration of the users tokens
   console.log(user)
   
-  if (!!user) {
+  if (user) {
     metrics.log("auth-attempt",1,{result:"success"});
     activeUsers[user.id] = user.iat;
     console.log(activeUsers)
@@ -214,7 +214,7 @@ const trackOrder = (req, res, next) => {
     
     console.log("orderItemsadfasdfa",res.statusCode)
     if (res.statusCode == 200){
-      orderItems = res.body.orders
+      const orderItems = res.body.orders
       console.log("orderItems",orderItems.length)
       metrics.log("pizza-bought", orderItems.length);
       metrics.log("pizza-creation",1,{status:"success"});
@@ -254,7 +254,7 @@ metrics.initializeMetric("active-users", "gauge", "1");
 function recordGaugeMetrics() {
   const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
   activeUsers = Object.fromEntries(
-    Object.entries(activeUsers).filter(([string, exp_time]) => exp_time <= currentTime)
+    Object.entries(activeUsers).filter(([, exp_time]) => exp_time <= currentTime)
   );
 
   metrics.log("cpu", getCpuUsagePercentage());
