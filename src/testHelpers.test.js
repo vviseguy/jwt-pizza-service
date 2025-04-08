@@ -26,6 +26,7 @@ async function generateRandomOrder(store, n = 3) {
   function selectRandomMenuItems(menu, n){
     return getRandomItems(menu.map((obj) => ({menuId:obj.id, description:obj.description, price:obj.price})), n)
   }
+  await DB.getConnection();
   const menu = await DB.getMenu();
   return {
     franchiseId: store.franchiseId,
@@ -35,30 +36,36 @@ async function generateRandomOrder(store, n = 3) {
 }
 async function createUser() {
   let user = generateRandomUser();
+  await DB.getConnection();
   return { ...(await DB.addUser(user)), ...user };
 }
 async function createAdminUser() {
   let user = generateRandomUser();
   user.roles = [{ role: Role.Admin }];
 
+  await DB.getConnection();
   return { ...(await DB.addUser(user)), ...user };
 }
 async function createMenuItem() {
   const item = generateMenuItem();
+  await DB.getConnection();
   return await DB.addMenuItem(item);
 }
 async function createOrder(user, store) {
   let order = generateRandomOrder(store);
+  await DB.getConnection();
   return await DB.addDinerOrder(user, order);
 }
 async function createFranchise(...admins) {
   let franchise = generateRandomFranchise(...admins);
 
+  await DB.getConnection();
   return await DB.createFranchise(franchise);
 }
 async function createStore(franchise) {
   let store = generateRandomStore(franchise);
 
+  await DB.getConnection();
   return await DB.createStore(store.franchiseId, store);
 }
 function randomName() {

@@ -4,10 +4,15 @@ const h = require("../testHelpers.test");
 let testUser;
 describe("Misc", () => {
   test("Bad Franchisee creation", async () => {
-    testUser = h.generateRandomUser();
-    testUser.roles = [{ role: Role.Franchisee }];
+    const connection = await DB.getConnection();
+    try {
+      testUser = h.generateRandomUser();
+      testUser.roles = [{ role: Role.Franchisee }];
 
-    await expect(async () => await DB.addUser(testUser)).rejects.toThrow(Error);
+      await expect(async () => await DB.addUser(testUser)).rejects.toThrow(Error);
+    } finally {
+      connection.end();
+    }
   });
   test("Get bad Id", async () => {
     const connection = await DB.getConnection();

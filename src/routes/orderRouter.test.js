@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../service");
 
-const h = require("../testHelpers.test.js");
+const h = require("../testHelpers.test");
 
 
 let admin, adminAuthToken;
