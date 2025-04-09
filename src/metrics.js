@@ -173,7 +173,7 @@ const requestTracker = (req, res, next) => {
     if (res.statusCode >= 400) metrics.log("error-codes", 1, { status: res.statusCode});
     // When the response finishes
     const duration = Date.now() - start; // Calculate the time taken
-    metrics.log("latency", duration);
+    metrics.log("latency", duration, { url: req.url, method: req.method });
   });
   next();
 };
