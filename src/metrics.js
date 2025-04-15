@@ -1,5 +1,5 @@
 const config = require("./config");
-const fs = require('fs');
+const fs = require("fs");
 
 let activeUsers = {};
 
@@ -7,7 +7,7 @@ let activeUsers = {};
 const convertAttributes = (attrs) =>
   Object.entries(attrs).map(([key, value]) => ({
     key,
-    value: { stringValue: ""+value },
+    value: { stringValue: "" + value },
   }));
 
 // Helper to prepare a data point for export (timestamp is already in nanoseconds)
@@ -138,23 +138,19 @@ const metrics = new MetricsCollector({ source: config.metrics.source });
 
 // initilize metrics
 
-
-
 metrics.initializeMetric("auth-attempt", "summary", "1");
 
 // functionality to log metrics
 function addAuthAttempt(user) {
   // log the expiration of the users tokens
   // console.log(user)
-  
+
   if (user) {
-    metrics.log("auth-attempt",1,{result:"success"});
+    metrics.log("auth-attempt", 1, { result: "success" });
     activeUsers[user.id] = user.iat;
     // console.log(activeUsers)
-  }
-  else metrics.log("auth-attempt",1,{result:"failure"});
+  } else metrics.log("auth-attempt", 1, { result: "failure" });
 }
-
 
 
 metrics.initializeMetric("error-codes", "summary", "1");
@@ -169,8 +165,8 @@ const requestTracker = (req, res, next) => {
 
   let start = Date.now();
   res.on("finish", () => {
-    
-    if (res.statusCode >= 400) metrics.log("error-codes", 1, { status: res.statusCode});
+    if (res.statusCode >= 400)
+      metrics.log("error-codes", 1, { status: res.statusCode });
     // When the response finishes
     const duration = Date.now() - start; // Calculate the time taken
     metrics.log("latency", duration, { url: req.url, method: req.method });
@@ -184,7 +180,6 @@ function track(endpoint) {
 
     let start = Date.now();
     res.on("finish", function () {
-
       const latency = Date.now() - start;
       metrics.log("latency-tracked-endpoints", latency, {
         method: req.method,
@@ -204,31 +199,28 @@ const trackLogout = (req, res, next) => {
   next();
 };
 
-
 metrics.initializeMetric("pizza-bought", "gauge", "1");
 metrics.initializeMetric("revenue", "gauge", "1");
 metrics.initializeMetric("pizza-creation", "summary", "1");
 const trackOrder = (req, res, next) => {
-  console.log("orderItems",res.status, res.statusCode)
+  console.log("orderItems", res.status, res.statusCode);
   res.on("finish", function () {
-    
-    console.log("orderItemsadfasdfa",res.statusCode)
-    if (res.statusCode == 200){
+    console.log("orderItemsadfasdfa", res.statusCode);
+    if (res.statusCode == 200) {
       // console.log(req.body)
-      const orderItems = req.body.items
+      const orderItems = req.body.items;
       // console.log("orderItems",orderItems.length)
       metrics.log("pizza-bought", orderItems.length);
-      metrics.log("pizza-creation",1,{status:"success"});
+      metrics.log("pizza-creation", 1, { status: "success" });
       orderItems.forEach((orderItem) => {
         metrics.log("revenue", orderItem.price);
-
       });
     } else if (res.statusCode >= 400) {
-      metrics.log("pizza-creation",1,{status:"failure"});
+      metrics.log("pizza-creation", 1, { status: "failure" });
     }
-  })
+  });
   next();
-}
+};
 
 // Log System Metrics
 const os = require("os");
@@ -255,7 +247,9 @@ metrics.initializeMetric("active-users", "gauge", "1");
 function recordGaugeMetrics() {
   const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
   activeUsers = Object.fromEntries(
-    Object.entries(activeUsers).filter(([, exp_time]) => exp_time <= currentTime)
+    Object.entries(activeUsers).filter(
+      ([, exp_time]) => exp_time <= currentTime
+    )
   );
 
   metrics.log("cpu", getCpuUsagePercentage());
@@ -268,7 +262,7 @@ function sendMetricsToGrafana() {
 
   const metricData = metrics.exportMetrics();
   // console.dir(metricData, { depth: null });
-  fs.writeFileSync('output.txt', JSON.stringify(metricData, null, 2));
+  fs.writeFileSync("output.txt", JSON.stringify(metricData, null, 2));
 
   fetch(`${config.metrics.url}`, {
     method: "POST",
@@ -283,11 +277,20 @@ function sendMetricsToGrafana() {
         console.error("Failed to push metrics data to Grafana", response);
       // else console.log("Pushed all metrics");
     })
-    .catch((error) => console.error("Error pushing metrics:", error));
+    .catch((error) => {
+      logger.logUnhandledError(error);
+      console.error("Error pushing metrics:", error);
+    });
 }
 
 setInterval(recordGaugeMetrics, 1000);
 setInterval(sendMetricsToGrafana, 10000);
 
-module.exports = { requestTracker, addAuthAttempt, track, trackLogout, trackOrder, metrics };
-
+module.exports = {
+  requestTracker,
+  addAuthAttempt,
+  track,
+  trackLogout,
+  trackOrder,
+  metrics,
+};

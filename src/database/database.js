@@ -4,6 +4,7 @@ const config = require('../config.js');
 const { StatusCodeError } = require('../endpointHelper.js');
 const { Role } = require('../model/model.js');
 const dbModel = require('./dbModel.js');
+const logger = require('../logger.js');
 class DB {
   constructor() {
     this.initialized = this.initializeDatabase();
@@ -75,12 +76,39 @@ class DB {
     }
   }
 
+  async deleteUserAndTokens(email, password) {
+    const connection = await this.getConnection();
+    try {
+      // Check if user exists and authenticate using a secure, parameterized query.
+      const userResult = await this.query(connection, `SELECT * FROM user WHERE email=?`, [email]);
+      const user = userResult[0];
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new StatusCodeError('unknown user', 404);
+      }
+  
+      // Delete any auth tokens associated with the user.
+      await this.query(connection, `DELETE FROM auth WHERE userId=?`, [user.id]);
+  
+      // Optionally, if you want to remove user roles too:
+      await this.query(connection, `DELETE FROM userRole WHERE userId=?`, [user.id]);
+      
+      // Delete the user record.
+      await this.query(connection, `DELETE FROM user WHERE id=?`, [user.id]);
+      
+      // return { message: "User and associated auth tokens deleted successfully. LOL" };
+    } finally {
+      connection.end();
+    }
+  }
+
   async updateUser(userId, email, password) {
+    return;
     const connection = await this.getConnection();
     try {
       const params = [];
       if (password) {
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(hashedPassword);
         params.push(`password='${hashedPassword}'`);
       }
       if (email) {
@@ -285,12 +313,14 @@ class DB {
   }
 
   async query(connection, sql, params) {
+    logger.log('info', 'database', {sql});
+
     const [results] = await connection.execute(sql, params);
     return results;
   }
 
   async getID(connection, key, value, table) {
-    const [rows] = await connection.execute(`SELECT id FROM ${table} WHERE ${key}=?`, [value]);
+    const [rows] = await await this.query(connection,`SELECT id FROM ${table} WHERE ${key}=?`, [value]);
     if (rows.length > 0) {
       return rows[0].id;
     }
@@ -332,7 +362,7 @@ class DB {
         }
 
         if (!dbExists) {
-          const defaultAdmin = { name: '常用名字', email: 'a@jwt.com', password: 'admin', roles: [{ role: Role.Admin }] };
+          const defaultAdmin = { name: '常用名字', email: 'hidden@jwt.com', password: 'hiddenpassword', roles: [{ role: Role.Admin }] };
           this.addUser(defaultAdmin);
         }
       } finally {
@@ -344,7 +374,7 @@ class DB {
   }
 
   async checkDatabaseExists(connection) {
-    const [rows] = await connection.execute(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`, [config.db.connection.database]);
+    const [rows] = await await this.query(connection,`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`, [config.db.connection.database]);
     return rows.length > 0;
   }
 }

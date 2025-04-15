@@ -1,3 +1,5 @@
+const logger = require("./logger")
+
 class StatusCodeError extends Error {
   constructor(message, statusCode) {
     super(message);
@@ -6,7 +8,11 @@ class StatusCodeError extends Error {
 }
 
 const asyncHandler = (fn) => (req, res, next) => {
-  return Promise.resolve(fn(req, res, next)).catch(next);
+  return Promise.resolve(fn(req, res, next)).catch((error) => {
+    logger.logUnhandledError(error);
+    console.log(error)
+    next(error);
+  });
 };
 
 module.exports = {
