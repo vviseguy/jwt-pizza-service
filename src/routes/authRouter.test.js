@@ -119,7 +119,7 @@ describe('Admin User Actions', () => {
       .put(`/api/auth/${testUser.id}`)
       .send(testUser)
       .set('Authorization', `Bearer ${adminUserAuthToken}`)
-
+    console.log(updateUserRes.body);
     // expect(updateUserRes.status).toBe(200);
     
   });
@@ -129,6 +129,7 @@ describe('Admin User Actions', () => {
       .send({email:null, password:null})
       .set('Authorization', `Bearer ${adminUserAuthToken}`)
 
+    console.log(updateUserRes.body);
     // expect(updateUserRes.status).toBe(404);
     
   });
@@ -141,6 +142,7 @@ describe('Admin User Actions', () => {
       .send(testUser)
       .set('Authorization', `Bearer not-a-token`)
 
+      console.log(updateUserRes.body);
     // expect(updateUserRes.status).toBe(401);
     
   });
