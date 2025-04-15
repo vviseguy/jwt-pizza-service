@@ -30,7 +30,7 @@ apiRouter.use('/docs', (req, res) => {
   res.json({
     version: version.version,
     endpoints: [...authRouter.endpoints, ...orderRouter.endpoints, ...franchiseRouter.endpoints],
-    config: { factory: config.factory.url, db: config.db.connection.host },
+    config: { factory: config.factory.url}//, db: config.db.connection.host },
   });
 });
 
@@ -49,7 +49,7 @@ app.use('*', (req, res) => {
 
 // Default error handler for all exceptions and errors.
 app.use((err, req, res, next) => {
-  res.status(err.statusCode ?? 500).json({ message: err.message, stack: err.stack });
+  res.status(err.statusCode ?? 500).json({ message: "Internal Server Error"/*err.message, stack: err.stack */});
   next();
 });
 
