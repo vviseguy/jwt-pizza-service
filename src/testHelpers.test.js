@@ -3,7 +3,7 @@ const { DB, Role } = require("./database/database");
 function generateRandomUser() {
   return {
     name: randomName(),
-    email: randomName() + "@test.com",
+    email: randomName() + "@mytest.eu",
     password: randomName(),
     roles: [],
   };

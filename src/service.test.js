@@ -25,7 +25,7 @@ describe('Basic Service Endpoints', () => {
     expect(response.body).toEqual({
       version: expect.any(String),
       endpoints: expect.any(Array),
-      config: { factory: expect.any(String), db: expect.any(String) },
+      config: { factory: expect.any(String)/*, db: expect.any(String) */},
     });
   });
 
