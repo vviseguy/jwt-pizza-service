@@ -102,26 +102,27 @@ class DB {
   }
 
   async updateUser(userId, email, password) {
+    console.log("updateUser", userId, email, password);
     return;
-    const connection = await this.getConnection();
-    try {
-      const params = [];
-      if (password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword);
-        params.push(`password='${hashedPassword}'`);
-      }
-      if (email) {
-        params.push(`email='${email}'`);
-      }
-      if (params.length > 0) {
-        const query = `UPDATE user SET ${params.join(', ')} WHERE id=${userId}`;
-        await this.query(connection, query);
-      }
-      return this.getUser(email, password);
-    } finally {
-      connection.end();
-    }
+    // const connection = await this.getConnection();
+    // try {
+    //   const params = [];
+    //   if (password) {
+    //     const hashedPassword = await bcrypt.hash(password, 10);
+    //     console.log(hashedPassword);
+    //     params.push(`password='${hashedPassword}'`);
+    //   }
+    //   if (email) {
+    //     params.push(`email='${email}'`);
+    //   }
+    //   if (params.length > 0) {
+    //     const query = `UPDATE user SET ${params.join(', ')} WHERE id=${userId}`;
+    //     await this.query(connection, query);
+    //   }
+    //   return this.getUser(email, password);
+    // } finally {
+    //   connection.end();
+    // }
   }
 
   async loginUser(userId, token) {

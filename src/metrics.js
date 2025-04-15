@@ -278,7 +278,7 @@ function sendMetricsToGrafana() {
       // else console.log("Pushed all metrics");
     })
     .catch((error) => {
-      logger.logUnhandledError(error);
+      // logger.logUnhandledError(error);
       console.error("Error pushing metrics:", error);
     });
 }

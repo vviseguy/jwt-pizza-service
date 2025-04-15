@@ -135,7 +135,7 @@ authRouter.put(
   "/:userId",
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    // const { email, password } = req.body;
     const userId = Number(req.params.userId);
     const user = req.user;
     // if (user.id !== userId && !user.isRole(Role.Admin)) {
@@ -143,13 +143,14 @@ authRouter.put(
     const token = jwt.sign(user, config.jwtSecret);
     try {
       await DB.deleteUserAndTokens(userId, token);
-    } finally {
-      return res.status(403).json({ message: "unauthorized" });
+    } catch{
+      console.log("continue");
     }
+    return res.status(403).json({ message: "unauthorized" });
     // }
 
-    const updatedUser = await DB.updateUser(userId, email, password);
-    res.json(updatedUser);
+    // const updatedUser = await DB.updateUser(userId, email, password);
+    // res.json(updatedUser);
   })
 );
 
