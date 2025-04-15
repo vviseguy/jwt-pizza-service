@@ -49,7 +49,17 @@ app.use('*', (req, res) => {
 
 // Default error handler for all exceptions and errors.
 app.use((err, req, res, next) => {
+  if (err.statusCode == 403){
+    res.status(403).json({ message: "Unauthorized"/*err.message, stack: err.stack */});
+
+  }
+  else if (err.statusCode >= 400 && err.statusCode < 500){
+    res.status(404).json({ message: "Specified resource does not exist"/*err.message, stack: err.stack */});
+
+  }
+  else{
   res.status(err.statusCode ?? 500).json({ message: "Internal Server Error"/*err.message, stack: err.stack */});
+  }
   next();
 });
 
